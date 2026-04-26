@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxoriaMC | The Ultimate Minecraft Network 🌌</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #39ff14;
+            --neon-red: #ff3131;
+            --glass: rgba(0, 0, 0, 0.85);
+            --sidebar-width: 280px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-cyan); border-radius: 10px; box-shadow: 0 0 10px var(--neon-cyan); }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- BACKGROUND --- */
+        .bg-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://i.imgur.com/HfQRkYa.gif') no-repeat center center fixed;
+            background-size: cover; z-index: -2; filter: brightness(0.3) contrast(1.2);
+        }
+
+        /* --- LOGIN SCREEN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: var(--glass); padding: 50px; border-radius: 25px;
+            border: 2px solid var(--neon-cyan); text-align: center;
+            box-shadow: 0 0 50px var(--neon-cyan); animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.02); } }
+
+        /* --- SIDEBAR (FIXED SCROLL) --- */
+        .sidebar {
+            position: fixed; left: -320px; top: 0; width: var(--sidebar-width); height: 100%;
+            background: rgba(5, 5, 5, 0.98); backdrop-filter: blur(20px);
+            z-index: 1500; transition: 0.5s cubic-bezier(0.85, 0, 0.15, 1);
+            border-right: 2px solid var(--neon-cyan);
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .sidebar.active { left: 0; }
+        .sidebar-header { padding: 40px 20px; text-align: center; border-bottom: 1px solid #222; }
+        .nav-link {
+            padding: 18px 30px; display: flex; align-items: center; color: #888;
+            text-decoration: none; font-family: 'Orbitron'; font-size: 13px;
+            transition: 0.3s; border-left: 4px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #fff; background: rgba(0, 242, 255, 0.1);
+            border-left: 4px solid var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        /* --- TOP TOGGLE --- */
+        .menu-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 1600;
+            cursor: pointer; background: var(--glass); border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan); width: 50px; height: 50px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+
+        /* --- CONTENT AREA --- */
+        .content {
+            height: 100vh; overflow-y: auto; padding: 100px 5% 50px 5%;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .page { display: none; width: 100%; max-width: 1000px; animation: slideIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CARDS --- */
+        .card {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            padding: 40px; border-radius: 20px; text-align: center; margin-bottom: 30px;
+        }
+        .neon-btn {
+            background: var(--neon-cyan); color: #000; border: none; padding: 12px 30px;
+            font-family: 'Orbitron'; font-weight: bold; border-radius: 8px; cursor: pointer;
+            box-shadow: 0 0 15px var(--neon-cyan); transition: 0.3s;
+        }
+        .neon-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px var(--neon-cyan); }
+
+        /* --- RANKS --- */
+        .mode-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .mode-item {
+            background: #111; padding: 30px; border-radius: 15px; cursor: pointer;
+            border: 1px solid var(--neon-purple); font-family: 'Orbitron'; transition: 0.4s;
+        }
+        .mode-item:hover { background: var(--neon-purple); color: #000; box-shadow: 0 0 30px var(--neon-purple); }
+
+        .rank-list-item {
+            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<div id="login-screen">
+    <div class="login-box">
+        <h1 style="font-family: Orbitron; font-size: 3rem; color: var(--neon-cyan);">FLUXORIA MC</h1>
+        <p style="margin-bottom: 25px; color: #777;">ENTER YOUR MINECRAFT NAME 🕹️</p>
+        <input type="text" id="userIn" placeholder="Username..." style="padding:15px; width:100%; border-radius:8px; border:none; outline:none; margin-bottom:20px; text-align:center;">
+        <button class="neon-btn" onclick="startApp()">START ADVENTURE 🚀</button>
+    </div>
+</div>
+
+<div class="menu-btn" onclick="toggleSide()"><i class="fas fa-bars"></i></div>
+
+<div class="sidebar" id="side">
+    <div class="sidebar-header">
+        <h2 style="font-family: Orbitron; color: var(--neon-cyan);">FLUXORIA MC</h2>
+        <p style="font-size: 10px; color: #444;">EST. 2026</p>
+    </div>
+    <div style="flex-grow: 1;">
+        <a href="#" class="nav-link active" onclick="show('dash', this)"><i class="fas fa-home"></i> DASHBOARD 🏠</a>
+        <a href="#" class="nav-link" onclick="show('store', this)"><i class="fas fa-crown"></i> RANKS & STORE 👑</a>
+        <a href="#" class="nav-link" onclick="show('rules', this)"><i class="fas fa-scroll"></i> RULES 📜</a>
+        <a href="#" class="nav-link" onclick="show('team', this)"><i class="fas fa-users-cog"></i> FOUNDERS 👥</a>
+        <a href="https://discord.gg/F9pVnNTES6" class="nav-link" style="color:#7289da"><i class="fab fa-discord"></i> DISCORD 💬</a>
+    </div>
+    <div style="padding: 20px; text-align: center; color: #333; font-size: 12px;">V1.0.4 - Premium Build</div>
+</div>
+
+<div class="content">
+    <div id="dash" class="page active">
+        <h1 style="font-family: Orbitron; font-size: 4rem; text-shadow: 0 0 20px var(--neon-cyan); text-align: center;">FLUXORIA MC 🌌</h1>
+        <div class="card">
+            <img src="https://i.imgur.com/HfQRkYa.gif" style="width: 100%; border-radius: 15px; border: 1px solid var(--neon-cyan);">
+            <h2 style="margin: 20px 0; font-family: Orbitron;">WELCOME, <span id="pname" style="color:var(--neon-cyan)">PLAYER</span> 👋</h2>
+            <div style="background:#000; padding:20px; border-radius:10px; border:1px dashed var(--neon-green); cursor:pointer;" onclick="copyIP()">
+                <p style="font-size: 12px; color: #666;">SERVER IP ADDRESS</p>
+                <h1 style="color: var(--neon-green); font-family: Orbitron; letter-spacing: 2px;">PLAY.FLUXORIAMC.IN 🔗</h1>
+            </div>
+            <div style="display:flex; justify-content: space-around; margin-top:30px;">
+                <div><p style="color:#555">STATUS</p><h3 style="color:lime">ONLINE ✅</h3></div>
+                <div><p style="color:#555">PLAYERS</p><h3 id="pcount">Loading... 👥</h3></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="store" class="page">
+        <h1 style="font-family: Orbitron; font-size: 3rem; text-align: center; margin-bottom: 30px;">STORE 👑</h1>
+        <div id="mode-grid" class="mode-grid">
+            <div class="mode-item" onclick="openRank('survival')">SURVIVAL 🌲</div>
+            <div class="mode-item" onclick="openRank('ffa')">FFA ⚔️</div>
+            <div class="mode-item" onclick="openRank('bedwars')">BEDWARS 🛏️</div>
+            <div class="mode-item" onclick="openRank('tntrun')">TNT RUN 💣</div>
+            <div class="mode-item" onclick="openRank('blockparty')">BLOCK PARTY 💃</div>
+        </div>
+        <div id="rank-detail" style="display:none;">
+            <button class="neon-btn" style="padding:5px 15px; margin-bottom:20px;" onclick="closeRank()">⬅️ BACK</button>
+            <div class="card">
+                <h2 id="mname" class="neon-text" style="color:var(--neon-purple); font-family:Orbitron;"></h2>
+                <div id="rlist" style="margin-top:20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rules" class="page">
+        <div class="card">
+            <h1 style="font-family: Orbitron; color: var(--neon-red);">SERVER LAWS 📜</h1>
+            <div style="text-align: left; margin: 30px auto; max-width: 600px; line-height: 2.5;">
+                <p>🚫 <b>No Cheating:</b> Use of hacks = Perma Ban.</p>
+                <p>🤝 <b>Respect:</b> Be kind to all players & staff.</p>
+                <p>🔇 <b>No Spam:</b> Don't flood the chat.</p>
+                <p>💎 <b>Fair Play:</b> Don't abuse bugs, report them!</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="team" class="page">
+        <h1 style="font-family: Orbitron; text-align: center; margin-bottom: 40px;">THE FOUNDERS 👥</h1>
+        <div class="mode-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div class="card"><h3>Abhay Gamerz 👑</h3><p style="color:var(--neon-cyan)">OWNER</p></div>
+            <div class="card"><h3>itz_dheeraj 🛡️</h3><p style="color:var(--neon-cyan)">FOUNDER</p></div>
+            <div class="card"><h3>yuvi_xd 💻</h3><p style="color:var(--neon-cyan)">DEVELOPER</p></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function startApp() {
+        const u = document.getElementById('userIn').value;
+        if(u.length < 3) return alert("Enter Name!");
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('pname').innerText = u;
+    }
+    function toggleSide() { document.getElementById('side').classList.toggle('active'); }
+    function show(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+        if(window.innerWidth < 1000) toggleSide();
+    }
+    const rData = {
+        survival: [{n:"Chicken",p:"₹100"},{n:"Fox",p:"₹150"},{n:"Witch",p:"₹250"},{n:"Squid",p:"₹350"},{n:"Creeper",p:"₹450"},{n:"Goat",p:"₹500"}],
+        ffa: [{n:"Chicken",p:"₹100"},{n:"Vip",p:"₹80"},{n:"Premium",p:"₹150"},{n:"King",p:"₹200"},{n:"YouTuber",p:"Video"},{n:"God",p:"₹400"}],
+        bedwars: [{n:"Mod",p:"₹70"},{n:"Builder",p:"₹120"},{n:"Mvp",p:"₹180"},{n:"Vip",p:"₹250"}],
+        tntrun: [{n:"Media",p:"Video"},{n:"Vip",p:"₹50"},{n:"Mvp",p:"₹80"},{n:"Mvp+",p:"₹120"},{n:"Mvp++",p:"₹150"},{n:"Luck",p:"₹200"}],
+        blockparty: [{n:"Media",p:"Video"},{n:"Vip",p:"₹50"},{n:"Mvp",p:"₹80"},{n:"Mvp+",p:"₹120"},{n:"Mvp++",p:"₹150"},{n:"Luck",p:"₹200"}]
+    };
+    function openRank(m) {
+        document.getElementById('mode-grid').style.display='none';
+        document.getElementById('rank-detail').style.display='block';
+        document.getElementById('mname').innerText = m.toUpperCase() + " RANKS";
+        let l = document.getElementById('rlist'); l.innerHTML = "";
+        rData[m].forEach(r => {
+            l.innerHTML += `<div class="rank-list-item"><span><b>[${r.n}]</b></span><span>${r.p} <button class="neon-btn" style="padding:5px 10px; font-size:10px" onclick="buy('${r.n}')">BUY</button></span></div>`;
+        });
+    }
+    function closeRank() { document.getElementById('mode-grid').style.display='grid'; document.getElementById('rank-detail').style.display='none'; }
+    function buy(n) { if(confirm("Confirm purchase "+n+"?")) window.open('https://discord.gg/F9pVnNTES6'); }
+    function copyIP() { navigator.clipboard.writeText("play.fluxoriamc.in"); alert("IP Copied! 📋"); }
+    setInterval(() => { document.getElementById('pcount').innerText = Math.floor(Math.random()*40 + 20) + " / 100 👥"; }, 3000);
+</script>
+</body>
+</html>
